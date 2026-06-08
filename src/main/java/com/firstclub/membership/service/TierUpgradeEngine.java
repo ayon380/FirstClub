@@ -29,11 +29,15 @@ public class TierUpgradeEngine {
      * Returns the new tier (may be same as current if no upgrade).
      */
     public MembershipTier evaluate(User user, Subscription subscription) {
+        return evaluate(user, subscription, false);
+    }
+
+    public MembershipTier evaluate(User user, Subscription subscription, boolean allowDowngrades) {
         // Build evaluation context (single DB query, reused for all evaluators)
         LocalDateTime windowStart = LocalDateTime.now().minusDays(30);
         long orderCount = orderRepository.findByUserAndOrderDateAfter(user, windowStart).size();
         BigDecimal totalSpend = orderRepository.sumFinalTotalByUserAndDateAfter(user, windowStart);
-        System.out.println("DEBUG EVALUATE: userId=" + user.getId() + " count=" + orderCount + " spend=" + totalSpend + " currentTier=" + subscription.getTier().getName());
+        System.out.println("DEBUG EVALUATE: userId=" + user.getId() + " count=" + orderCount + " spend=" + totalSpend + " currentTier=" + subscription.getTier().getName() + " allowDowngrades=" + allowDowngrades);
 
         EvaluationContext ctx = EvaluationContext.builder()
             .orderCountLast30Days(orderCount)
@@ -44,20 +48,33 @@ public class TierUpgradeEngine {
         List<MembershipTier> allTiers = tierRepository.findAllByOrderByPriorityDesc();
 
         MembershipTier currentTier = subscription.getTier();
+        MembershipTier defaultTier = subscription.getPlan().getDefaultTier();
 
         for (MembershipTier candidate : allTiers) {
-            // Only consider upgrades (not downgrades via this engine)
-            if (candidate.getPriority() <= currentTier.getPriority()) continue;
-            if (candidate.getUpgradeRules() == null || candidate.getUpgradeRules().isEmpty()) continue;
+            // If downgrades are NOT allowed, we only look at tiers with higher priority
+            if (!allowDowngrades && candidate.getPriority() <= currentTier.getPriority()) {
+                continue;
+            }
+
+            // A subscription tier can never drop below the plan's default tier
+            if (candidate.getPriority() < defaultTier.getPriority()) {
+                continue;
+            }
+
+            // If it is the default tier, they automatically qualify
+            if (candidate.getId().equals(defaultTier.getId())) {
+                return candidate;
+            }
+
+            if (candidate.getUpgradeRules() == null || candidate.getUpgradeRules().isEmpty()) {
+                continue;
+            }
 
             boolean qualifies = evaluatorRegistry.allRulesPass(user, candidate.getUpgradeRules(), ctx);
             if (qualifies) {
-                log.info("User {} qualifies for tier upgrade: {} -> {}",
-                    user.getId(), currentTier.getName(), candidate.getName());
                 return candidate;
             }
         }
 
-        return currentTier; // no upgrade
-    }
-}
+        return currentTier; // no change
+    }}

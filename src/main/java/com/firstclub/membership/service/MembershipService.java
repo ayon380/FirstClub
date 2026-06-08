@@ -233,6 +233,81 @@ public class MembershipService {
         }
     }
 
+    // Lock-outside-Transaction pattern for scheduled tier evaluation
+    public void triggerScheduledTierEvaluation(Long userId) {
+        userLockManager.executeWithLock(userId, () -> {
+            try {
+                self.triggerScheduledTierEvaluationTransactional(userId);
+            } catch (ObjectOptimisticLockingFailureException e) {
+                optimisticLockCounter.incrementAndGet();
+                log.warn("Optimistic locking conflict during scheduled evaluation for user: {}. Will skip as it is periodic.", userId);
+            } catch (Exception e) {
+                log.error("Error during scheduled evaluation for user: {}", userId, e);
+            }
+            return null;
+        });
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void triggerScheduledTierEvaluationTransactional(Long userId) {
+        Subscription subscription = subscriptionRepository.findByUserIdAndStatus(userId, SubscriptionStatus.ACTIVE)
+                .orElse(null);
+
+        if (subscription == null) {
+            return;
+        }
+
+        MembershipTier currentTier = subscription.getTier();
+        // Pass allowDowngrades = true to evaluate both upgrades and downgrades
+        MembershipTier targetTier = upgradeEngine.evaluate(subscription.getUser(), subscription, true);
+
+        if (!currentTier.getId().equals(targetTier.getId())) {
+            subscription.setTier(targetTier);
+            subscriptionRepository.save(subscription);
+
+            String reason = targetTier.getPriority() > currentTier.getPriority() ? "AUTO_UPGRADE" : "AUTO_DOWNGRADE";
+
+            SubscriptionHistory history = SubscriptionHistory.builder()
+                    .subscription(subscription)
+                    .fromTier(currentTier)
+                    .toTier(targetTier)
+                    .fromStatus(SubscriptionStatus.ACTIVE)
+                    .toStatus(SubscriptionStatus.ACTIVE)
+                    .changeReason(reason)
+                    .changedAt(LocalDateTime.now())
+                    .build();
+            historyRepository.save(history);
+
+            log.info("Scheduled evaluation: tier changed for user {} from {} to {} ({})", 
+                userId, currentTier.getName(), targetTier.getName(), reason);
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void expireSubscription(Long subscriptionId) {
+        Subscription subscription = subscriptionRepository.findById(subscriptionId).orElse(null);
+        if (subscription == null || subscription.getStatus() != SubscriptionStatus.ACTIVE) {
+            return;
+        }
+
+        SubscriptionStatus oldStatus = subscription.getStatus();
+        subscription.setStatus(SubscriptionStatus.EXPIRED);
+        subscriptionRepository.save(subscription);
+
+        SubscriptionHistory history = SubscriptionHistory.builder()
+                .subscription(subscription)
+                .fromTier(subscription.getTier())
+                .toTier(subscription.getTier())
+                .fromStatus(oldStatus)
+                .toStatus(SubscriptionStatus.EXPIRED)
+                .changeReason("AUTO_EXPIRY")
+                .changedAt(LocalDateTime.now())
+                .build();
+        historyRepository.save(history);
+
+        log.info("Expired subscription ID {} for user {}", subscriptionId, subscription.getUser().getId());
+    }
+
     // --- Helper Methods ---
     private LocalDate calculateEndDate(LocalDate start, BillingPeriod period) {
         return switch (period) {
