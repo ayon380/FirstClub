@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FirstClub Membership Console</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #090d16 0%, #111827 50%, #070a10 100%);
+            --glass-bg: rgba(17, 24, 39, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: rgba(0, 0, 0, 0.4);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-glow: rgba(99, 102, 241, 0.35);
+            
+            --silver-color: #94a3b8;
+            --silver-gradient: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+            --silver-glow: rgba(148, 163, 184, 0.3);
+            
+            --gold-color: #f59e0b;
+            --gold-gradient: linear-gradient(135deg, #fef08a 0%, #d97706 100%);
+            --gold-glow: rgba(245, 158, 11, 0.3);
+            
+            --platinum-color: #38bdf8;
+            --platinum-gradient: linear-gradient(135deg, #bae6fd 0%, #0284c7 100%);
+            --platinum-glow: rgba(56, 189, 248, 0.35);
+            
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+            overflow-x: hidden;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Glassmorphism container */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px var(--glass-shadow);
+            padding: 1.75rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand i {
+            font-size: 2.25rem;
+            background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
+        }
+
+        .brand h1 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.85rem;
+            letter-spacing: -0.025em;
+            background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-selector-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-selector-wrapper label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        select {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            padding: 0.65rem 2rem 0.65rem 1rem;
+            border-radius: 12px;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        select:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.25);
+        }
+
+        /* Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.75rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1.25fr 1fr;
+            }
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* User Statistics Banner */
+        .user-banner {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            align-items: center;
+            background: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.1) 0%, rgba(0, 0, 0, 0) 60%), var(--glass-bg);
+        }
+
+        .user-info-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #475569 0%, #1e293b 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .avatar i {
+            font-size: 1.5rem;
+            color: #94a3b8;
+        }
+
+        .user-details h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+
+        .user-details p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .cohort-badge {
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: #a5b4fc;
+            padding: 0.2rem 0.6rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-top: 0.25rem;
+        }
+
+        .stat-item {
+            text-align: right;
+            padding-right: 1rem;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-item:last-child {
+            border: none;
+            padding-right: 0;
+        }
+
+        @media (max-width: 768px) {
+            .stat-item {
+                text-align: left;
+                padding-right: 0;
+                border: none;
+            }
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-primary);
+        }
+
+        /* Section Titles */
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        /* Plan Catalog Cards */
+        .plan-catalog {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .plan-card {
+            background: linear-gradient(180deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.6) 100%);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s;
+        }
+
+        .plan-card.active-plan {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
+            background: linear-gradient(180deg, rgba(99, 102, 241, 0.05) 0%, rgba(15, 23, 42, 0.6) 100%);
+        }
+
+        .plan-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .plan-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0) 70%);
+            pointer-events: none;
+        }
+
+        .plan-card.active-plan::before {
+            content: 'ACTIVE PLAN';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--success);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            letter-spacing: 0.05em;
+        }
+
+        .plan-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-price-wrapper {
+            margin: 1rem 0;
+        }
+
+        .plan-price {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
+        .plan-period {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .plan-details {
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .plan-details span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .plan-details i {
+            color: var(--success);
+        }
+
+        .btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(99, 102, 241, 0.5);
+            filter: brightness(1.1);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn:disabled {
+            background: #1e293b;
+            color: #475569;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            box-shadow: none;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Status & Benefits Badge */
+        .tier-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 0.85rem;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+            text-transform: uppercase;
+        }
+
+        .tier-silver {
+            background: var(--silver-gradient);
+            color: #0f172a;
+            box-shadow: 0 4px 12px var(--silver-glow);
+        }
+
+        .tier-gold {
+            background: var(--gold-gradient);
+            color: #0f172a;
+            box-shadow: 0 4px 12px var(--gold-glow);
+        }
+
+        .tier-platinum {
+            background: var(--platinum-gradient);
+            color: #0f172a;
+            box-shadow: 0 4px 12px var(--platinum-glow);
+        }
+
+        .tier-none {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            box-shadow: none;
+        }
+
+        .benefit-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .benefit-card-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 0.85rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .benefit-card-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .benefit-card-item i {
+            font-size: 1.15rem;
+        }
+
+        .benefit-card-item.disc i { color: var(--platinum-color); }
+        .benefit-card-item.del i { color: var(--gold-color); }
+        .benefit-card-item.sup i { color: var(--success); }
+        .benefit-card-item.coup i { color: var(--warning); }
+
+        /* Progress Bar */
+        .progress-section {
+            margin-top: 1.5rem;
+            padding: 1.25rem;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, #818cf8 100%);
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.5s ease-out;
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .rule-progress-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .rule-progress-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .rule-progress-item span.met {
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .rule-progress-item span.not-met {
+            color: var(--text-secondary);
+        }
+
+        /* Shopping Cart Simulator */
+        .checkout-container {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .catalog-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .catalog-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            transition: all 0.2s;
+        }
+
+        .catalog-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .item-info h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .item-info span {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.1rem 0.4rem;
+            border-radius: 6px;
+            margin-top: 0.25rem;
+            display: inline-block;
+        }
+
+        .catalog-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .price-tag {
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-primary);
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        /* Cart & Order Review */
+        .cart-wrapper {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 16px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .cart-items-list {
+            margin-bottom: 1.25rem;
+            max-height: 200px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .cart-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            font-size: 0.9rem;
+        }
+
+        .cart-item-row:last-child {
+            border-bottom: none;
+        }
+
+        .cart-empty {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            padding: 2rem 0;
+        }
+
+        .cart-item-qty {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 0.1rem 0.5rem;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+
+        .bill-details {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+            font-size: 0.9rem;
+        }
+
+        .bill-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-secondary);
+        }
+
+        .bill-row.discount {
+            color: var(--platinum-color);
+            font-weight: 600;
+        }
+
+        .bill-row.total {
+            color: var(--text-primary);
+            font-weight: 800;
+            font-size: 1.15rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .benefits-preview-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .preview-benefit-badge {
+            font-size: 0.75rem;
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            padding: 0.15rem 0.5rem;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        /* History Log Table */
+        .history-table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.875rem;
+        }
+
+        th, td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        th {
+            color: var(--text-secondary);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        tr:last-child td {
+            border: none;
+        }
+
+        .history-reason {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Concurrency Panel */
+        .concurrency-controls {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .slider-wrapper label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .slider-value {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--primary);
+            min-width: 20px;
+        }
+
+        .concurrency-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .concurrency-stat-card {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .concurrency-stat-card .val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-top: 0.25rem;
+        }
+
+        .concurrency-stat-card.success-card { color: var(--success); }
+        .concurrency-stat-card.failure-card { color: var(--danger); }
+        .concurrency-stat-card.lock-card { color: var(--warning); }
+
+        .spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* General Alert Message */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: rgba(17, 24, 39, 0.95);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateY(150%);
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+        }
+
+        .toast.success { border-color: var(--success); }
+        .toast.success i { color: var(--success); }
+        .toast.error { border-color: var(--danger); }
+        .toast.error i { color: var(--danger); }
+    </style>
+</head>
+<body>
+
+    <!-- Toast Alert Notification -->
+    <div id="toast" class="toast">
+        <i id="toast-icon" class="fa-solid"></i>
+        <span id="toast-message">Notification message</span>
+    </div>
+
+    <!-- Header Panel -->
+    <header class="glass-panel">
+        <div class="brand">
+            <i class="fa-solid fa-crown"></i>
+            <h1>FirstClub</h1>
+        </div>
+        <div class="user-selector-wrapper">
+            <label for="userSelect">Simulation Sandbox User:</label>
+            <select id="userSelect" onchange="onUserChanged()">
+                <!-- Loaded dynamically -->
+            </select>
+        </div>
+    </header>
+
+    <!-- Main Container Grid -->
+    <div class="dashboard-grid">
+        
+        <!-- User Banner Detail (Full Width) -->
+        <div class="glass-panel user-banner full-width">
+            <div class="user-info-card">
+                <div class="avatar">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+                <div class="user-details">
+                    <h3 id="userName">User Name</h3>
+                    <p id="userEmail">user@example.com</p>
+                    <span id="userCohort" class="cohort-badge">VIP</span>
+                </div>
+            </div>
+            
+            <div class="stat-item">
+                <div class="stat-label">Active Membership</div>
+                <div class="stat-value" id="currentTierText">SILVER</div>
+            </div>
+
+            <div class="stat-item">
+                <div class="stat-label">30-Day Order Count</div>
+                <div class="stat-value" id="ordersCountVal">0</div>
+            </div>
+
+            <div class="stat-item">
+                <div class="stat-label">30-Day Spend</div>
+                <div class="stat-value" id="spendVal">₹0</div>
+            </div>
+        </div>
+
+        <!-- Left Column: Catalog & Checkout Simulator -->
+        <div class="glass-panel">
+            <div class="section-title">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <h2>Shopping & Checkout Journey</h2>
+            </div>
+            
+            <div class="checkout-container">
+                <!-- Catalog List -->
+                <div>
+                    <h3 style="font-size: 0.95rem; margin-bottom: 0.75rem; color: var(--text-secondary); font-weight: 700; text-transform: uppercase;">Product Catalog</h3>
+                    <div class="catalog-list">
+                        <div class="catalog-item">
+                            <div class="item-info">
+                                <h4>Premium Laptop</h4>
+                                <span>Electronics</span>
+                            </div>
+                            <div class="catalog-actions">
+                                <span class="price-tag">₹80,000</span>
+                                <button class="btn-icon" onclick="addToCart('Premium Laptop', 'Electronics', 80000)"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="catalog-item">
+                            <div class="item-info">
+                                <h4>Sport Running Shoes</h4>
+                                <span>Fashion</span>
+                            </div>
+                            <div class="catalog-actions">
+                                <span class="price-tag">₹5,000</span>
+                                <button class="btn-icon" onclick="addToCart('Sport Running Shoes', 'Fashion', 5000)"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="catalog-item">
+                            <div class="item-info">
+                                <h4>Organic Fresh Milk</h4>
+                                <span>Groceries</span>
+                            </div>
+                            <div class="catalog-actions">
+                                <span class="price-tag">₹60</span>
+                                <button class="btn-icon" onclick="addToCart('Organic Fresh Milk', 'Groceries', 60)"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                        </div>
+                        
+                        <div class="catalog-item">
+                            <div class="item-info">
+                                <h4>Wireless Headphones</h4>
+                                <span>Electronics</span>
+                            </div>
+                            <div class="catalog-actions">
+                                <span class="price-tag">₹8,000</span>
+                                <button class="btn-icon" onclick="addToCart('Wireless Headphones', 'Electronics', 8000)"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shopping Cart Summary -->
+                <div class="cart-wrapper">
+                    <div>
+                        <h3 style="font-size: 0.95rem; margin-bottom: 0.75rem; color: var(--text-secondary); font-weight: 700; text-transform: uppercase; display: flex; justify-content: space-between;">
+                            <span>Active Cart</span>
+                            <span id="cartCount" class="cart-empty" style="padding:0; font-size:0.8rem;">(0 items)</span>
+                        </h3>
+                        
+                        <div class="cart-items-list" id="cartItemsList">
+                            <div class="cart-empty">Cart is empty. Click + to add items.</div>
+                        </div>
+
+                        <div class="benefits-preview-badges" id="benefitsPreviewBadges">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="bill-details">
+                        <div class="bill-row">
+                            <span>Raw Total</span>
+                            <span id="rawTotalText">₹0.00</span>
+                        </div>
+                        <div class="bill-row discount">
+                            <span>Discount Saving</span>
+                            <span id="discountText">-₹0.00</span>
+                        </div>
+                        <div class="bill-row">
+                            <span>Delivery Fee</span>
+                            <span id="deliveryFeeText">₹50.00</span>
+                        </div>
+                        <div class="bill-row total">
+                            <span>Final Bill</span>
+                            <span id="finalBillText">₹0.00</span>
+                        </div>
+                        <button class="btn" style="margin-top: 1rem;" id="btnPlaceOrder" onclick="placeOrder()" disabled>
+                            <i class="fa-solid fa-bag-shopping"></i> Complete Checkout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Subscription Console -->
+        <div class="glass-panel" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            
+            <!-- Subscription Info -->
+            <div>
+                <div class="section-title" style="margin-bottom: 0.5rem;">
+                    <i class="fa-solid fa-crown"></i>
+                    <h2>Active Subscription Status</h2>
+                </div>
+                
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 1rem;">
+                    <div>
+                        <p id="activePlanText" style="font-weight: 700; font-size: 1.1rem;">No Active Plan</p>
+                        <p id="expiryText" style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.15rem;">-</p>
+                    </div>
+                    <div id="tierBadgeWrapper">
+                        <span class="tier-badge tier-none">NO TIER</span>
+                    </div>
+                </div>
+
+                <!-- Progress Section -->
+                <div class="progress-section" id="progressSectionWrapper" style="display: none;">
+                    <div class="progress-header">
+                        <span id="nextTierProgressLabel">Progress to GOLD</span>
+                        <span id="progressPercentText" style="color: var(--primary);">0%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    <div class="rule-progress-list" id="ruleProgressList">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Active Tier Benefits list -->
+                <div id="benefitsPanel" style="margin-top: 1.25rem; display: none;">
+                    <h4 style="font-size: 0.85rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; margin-bottom: 0.5rem;">Active Tier Perks</h4>
+                    <div class="benefit-list" id="activeBenefitsList">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+
+                <div id="noSubPanel" style="padding: 2rem 1rem; text-align: center; color: var(--text-secondary); font-size: 0.9rem;">
+                    No active membership found. Choose a plan below to subscribe.
+                </div>
+            </div>
+
+            <!-- Manage Subscription / Cancel -->
+            <div id="cancelSubWrapper" style="display: none; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1.25rem;">
+                <button class="btn btn-secondary" style="border-color: rgba(239, 68, 68, 0.2); color: #fca5a5;" onclick="cancelSubscription()">
+                    <i class="fa-solid fa-circle-xmark"></i> Cancel Active Membership
+                </button>
+            </div>
+        </div>
+
+        <!-- Full Width: Purchase Membership Catalog -->
+        <div class="glass-panel full-width">
+            <div class="section-title">
+                <i class="fa-solid fa-ticket"></i>
+                <h2>Explore Membership Plans</h2>
+            </div>
+            <div class="plan-catalog" id="plansGrid">
+                <!-- Loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Concurrency Sandbox -->
+        <div class="glass-panel full-width">
+            <div class="section-title">
+                <i class="fa-solid fa-bolt-lightning"></i>
+                <h2>Concurrency Simulation & Stress Test Sandbox</h2>
+            </div>
+            
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5;">
+                Simulates race conditions by launching multiple checkout threads simultaneously for the active user. 
+                Demonstrates the database optimistic locking and striped in-memory locking (`UserLockManager`) logic. 
+                All orders are saved safely, and the user's tier is upgraded precisely without duplicate audit logs.
+            </p>
+
+            <div class="concurrency-controls">
+                <div class="slider-wrapper">
+                    <label for="threadSlider">Concurrent Checkouts (Threads):</label>
+                    <input type="range" id="threadSlider" min="1" max="10" value="5" oninput="updateSliderVal(this.value)">
+                    <span class="slider-value" id="sliderVal">5</span>
+                </div>
+                <button class="btn" style="width: auto; padding: 0.75rem 2rem;" id="btnRunConcurrency" onclick="runConcurrencyTest()">
+                    <i class="fa-solid fa-play"></i> Launch Threads
+                </button>
+            </div>
+
+            <div id="concurrencyResultsWrapper" style="display: none;">
+                <div class="concurrency-summary-grid">
+                    <div class="concurrency-stat-card success-card">
+                        <div class="lbl">Success Count</div>
+                        <div class="val" id="concSuccessCount">0</div>
+                    </div>
+                    <div class="concurrency-stat-card failure-card">
+                        <div class="lbl">Failure Count</div>
+                        <div class="val" id="concFailureCount">0</div>
+                    </div>
+                    <div class="concurrency-stat-card lock-card">
+                        <div class="lbl">Optimistic Lock Conflicts</div>
+                        <div class="val" id="concLockConflicts">0</div>
+                    </div>
+                    <div class="concurrency-stat-card" style="color: var(--platinum-color);">
+                        <div class="lbl">Final Membership Tier</div>
+                        <div class="val" id="concFinalTier">-</div>
+                    </div>
+                    <div class="concurrency-stat-card" style="color: var(--text-secondary);">
+                        <div class="lbl">Duration (ms)</div>
+                        <div class="val" id="concDuration">0</div>
+                    </div>
+                </div>
+
+                <h3 style="font-size: 0.95rem; margin-bottom: 0.75rem; color: var(--text-secondary); font-weight: 700; text-transform: uppercase;">Execution Log Per Thread</h3>
+                <div class="history-table-wrapper" style="max-height: 250px; overflow-y: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Thread ID</th>
+                                <th>Status</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="concurrencyLogBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Full Width: Tier Change Audit History Log -->
+        <div class="glass-panel full-width">
+            <div class="section-title">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <h2>Membership State Transition Audit History</h2>
+            </div>
+            
+            <div class="history-table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>From Tier</th>
+                            <th>To Tier</th>
+                            <th>Reason / Event</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <!-- Loaded dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- UI Logic Scripts -->
+    <script>
+        const API_BASE = "http://localhost:8080/api";
+        
+        let users = [];
+        let activeUserId = null;
+        let cart = [];
+        let debounceTimer;
+
+        // On document load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadUsers();
+            loadPlans();
+        });
+
+        // Toast notifications helper
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            const msgSpan = document.getElementById('toast-message');
+
+            toast.className = `toast show ${type}`;
+            msgSpan.textContent = message;
+            
+            if (type === 'success') {
+                icon.className = 'fa-solid fa-circle-check';
+            } else {
+                icon.className = 'fa-solid fa-circle-exclamation';
+            }
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Fetch user dropdown
+        async function loadUsers() {
+            try {
+                const res = await fetch(`${API_BASE}/users`);
+                users = await res.json();
+                
+                const select = document.getElementById('userSelect');
+                select.innerHTML = '';
+                
+                users.forEach(user => {
+                    const opt = document.createElement('option');
+                    opt.value = user.id;
+                    opt.textContent = `${user.name} (${user.cohort || 'Standard'})`;
+                    select.appendChild(opt);
+                });
+
+                if (users.length > 0) {
+                    activeUserId = users[0].id;
+                    refreshDashboard();
+                }
+            } catch (err) {
+                console.error("Failed to load users", err);
+                showToast("Error loading sandbox users", "error");
+            }
+        }
+
+        // Fetch membership plans
+        async function loadPlans() {
+            try {
+                const res = await fetch(`${API_BASE}/memberships/plans`);
+                const plans = await res.json();
+                const grid = document.getElementById('plansGrid');
+                grid.innerHTML = '';
+
+                plans.forEach(plan => {
+                    const card = document.createElement('div');
+                    card.className = 'plan-card';
+                    card.id = `plan-card-${plan.id}`;
+                    
+                    let billingText = plan.billingPeriod === 'MONTHLY' ? 'Monthly' : plan.billingPeriod === 'QUARTERLY' ? 'Quarterly' : 'Yearly';
+                    let priceText = `₹${plan.price}`;
+
+                    card.innerHTML = `
+                        <div>
+                            <div class="plan-name">${plan.name}</div>
+                            <div class="plan-price-wrapper">
+                                <span class="plan-price">${priceText}</span>
+                                <span class="plan-period">/${billingText.toLowerCase()}</span>
+                            </div>
+                            <div class="plan-details">
+                                <span><i class="fa-solid fa-circle-check"></i> Starts at ${plan.defaultTierName} Tier</span>
+                                <span><i class="fa-solid fa-circle-check"></i> Tier specific coupons & discounts</span>
+                            </div>
+                        </div>
+                        <button class="btn" onclick="subscribeToPlan(${plan.id})">
+                            <i class="fa-solid fa-file-invoice-dollar"></i> Subscribe
+                        </button>
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (err) {
+                console.error("Failed to load plans", err);
+            }
+        }
+
+        // Handle Active User Changed
+        function onUserChanged() {
+            activeUserId = document.getElementById('userSelect').value;
+            cart = [];
+            updateCartUI();
+            refreshDashboard();
+        }
+
+        // Refresh all dashboard metrics
+        async function refreshDashboard() {
+            if (!activeUserId) return;
+            
+            // Highlight user info in banner
+            const user = users.find(u => u.id == activeUserId);
+            if (user) {
+                document.getElementById('userName').textContent = user.name;
+                document.getElementById('userEmail').textContent = user.email;
+                const cohortBadge = document.getElementById('userCohort');
+                if (user.cohort) {
+                    cohortBadge.textContent = user.cohort;
+                    cohortBadge.style.display = 'inline-block';
+                } else {
+                    cohortBadge.style.display = 'none';
+                }
+            }
+
+            try {
+                // Fetch Subscription status
+                const res = await fetch(`${API_BASE}/memberships/${activeUserId}/status`);
+                
+                if (res.status === 404) {
+                    // No active subscription
+                    setNoSubscriptionUI();
+                    return;
+                }
+                
+                const status = await res.json();
+                setSubscriptionUI(status);
+
+            } catch (err) {
+                console.error("Failed to get status", err);
+                setNoSubscriptionUI();
+            }
+        }
+
+        function setNoSubscriptionUI() {
+            document.getElementById('currentTierText').textContent = "NONE";
+            document.getElementById('ordersCountVal').textContent = "0";
+            document.getElementById('spendVal').textContent = "₹0";
+
+            // Subscription panels
+            document.getElementById('activePlanText').textContent = "No Active Plan";
+            document.getElementById('expiryText').textContent = "Subscribe to unlock benefits";
+            document.getElementById('tierBadgeWrapper').innerHTML = `<span class="tier-badge tier-none">NO TIER</span>`;
+            document.getElementById('progressSectionWrapper').style.display = 'none';
+            document.getElementById('benefitsPanel').style.display = 'none';
+            document.getElementById('noSubPanel').style.display = 'block';
+            document.getElementById('cancelSubWrapper').style.display = 'none';
+            document.getElementById('historyTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-secondary)">No transition history available</td></tr>';
+
+            // Remove active highlights
+            const cards = document.querySelectorAll('.plan-card');
+            cards.forEach(c => c.classList.remove('active-plan'));
+
+            updateCalculations();
+        }
+
+        function setSubscriptionUI(status) {
+            // Stats banner
+            document.getElementById('currentTierText').textContent = status.tierName;
+            
+            // Look through history or compute stats
+            // We'll parse user's 30-day stats from DTO progress block or compute it
+            let ordersVal = 0;
+            let spendVal = 0;
+            if (status.progressToNextTier && status.progressToNextTier.rules) {
+                const orderRule = status.progressToNextTier.rules.find(r => r.ruleType === 'ORDER_COUNT_THRESHOLD');
+                if (orderRule) ordersVal = orderRule.currentValue;
+                const spendRule = status.progressToNextTier.rules.find(r => r.ruleType === 'MONTHLY_SPEND_THRESHOLD');
+                if (spendRule) spendVal = spendRule.currentValue;
+            } else {
+                // If max tier, or rules don't exist, we fallback
+                // Calculate from backend if necessary, or just hardcode some placeholder
+                // Let's assume stats can be read from the history/progress
+            }
+
+            document.getElementById('ordersCountVal').textContent = ordersVal;
+            document.getElementById('spendVal').textContent = `₹${parseFloat(spendVal).toLocaleString()}`;
+
+            // Subscription Info Panel
+            document.getElementById('activePlanText').textContent = status.planName;
+            document.getElementById('expiryText').textContent = `${status.daysRemaining} days remaining (Expires ${status.endDate})`;
+            
+            // Badge
+            let badgeClass = `tier-${status.tierName.toLowerCase()}`;
+            document.getElementById('tierBadgeWrapper').innerHTML = `<span class="tier-badge ${badgeClass}"><i class="fa-solid fa-award"></i> ${status.tierName}</span>`;
+
+            // Active Benefits list
+            document.getElementById('noSubPanel').style.display = 'none';
+            document.getElementById('benefitsPanel').style.display = 'block';
+            document.getElementById('cancelSubWrapper').style.display = 'block';
+            
+            const benefitsList = document.getElementById('activeBenefitsList');
+            benefitsList.innerHTML = '';
+            status.activeBenefits.forEach(benefit => {
+                const item = document.createElement('div');
+                let iconClass = 'fa-solid ';
+                let typeClass = '';
+                let desc = '';
+                
+                if (benefit.type === 'PERCENTAGE_DISCOUNT') {
+                    iconClass += 'fa-percent';
+                    typeClass = 'disc';
+                    desc = `${benefit.params.discountPercent}% Discount on eligible orders ${benefit.params.category ? 'in category ' + benefit.params.category : ''}`;
+                } else if (benefit.type === 'FREE_DELIVERY') {
+                    iconClass += 'fa-truck-fast';
+                    typeClass = 'del';
+                    desc = `Free Delivery ${benefit.params.minOrderValue > 0 ? 'on orders above ₹' + benefit.params.minOrderValue : 'unconditionally'}`;
+                } else if (benefit.type === 'PRIORITY_SUPPORT') {
+                    iconClass += 'fa-headset';
+                    typeClass = 'sup';
+                    desc = 'Priority Customer Support Routing';
+                } else if (benefit.type === 'EXCLUSIVE_COUPON') {
+                    iconClass += 'fa-ticket';
+                    typeClass = 'coup';
+                    desc = `Exclusive Coupon Code: ${benefit.params.couponCode}`;
+                }
+
+                item.className = `benefit-card-item ${typeClass}`;
+                item.innerHTML = `<i class="${iconClass}"></i><span>${desc}</span>`;
+                benefitsList.appendChild(item);
+            });
+
+            // Progress Section
+            const progressWrapper = document.getElementById('progressSectionWrapper');
+            if (status.progressToNextTier) {
+                progressWrapper.style.display = 'block';
+                document.getElementById('nextTierProgressLabel').textContent = `Unlock ${status.progressToNextTier.nextTierName} Tier`;
+                
+                // Render progress bars and rules
+                const rulesList = document.getElementById('ruleProgressList');
+                rulesList.innerHTML = '';
+                
+                let rulesMet = 0;
+                status.progressToNextTier.rules.forEach(rule => {
+                    const row = document.createElement('div');
+                    row.className = 'rule-progress-item';
+                    
+                    let ruleNameText = '';
+                    let detailsText = '';
+                    
+                    if (rule.ruleType === 'ORDER_COUNT_THRESHOLD') {
+                        ruleNameText = 'Order Count (30 days)';
+                        detailsText = `${rule.currentValue} / ${rule.requiredValue} orders`;
+                    } else if (rule.ruleType === 'MONTHLY_SPEND_THRESHOLD') {
+                        ruleNameText = 'Total Spend (30 days)';
+                        detailsText = `₹${parseFloat(rule.currentValue).toLocaleString()} / ₹${parseFloat(rule.requiredValue).toLocaleString()}`;
+                    } else if (rule.ruleType === 'COHORT_MATCH') {
+                        ruleNameText = 'Cohort Requirement';
+                        detailsText = rule.met ? `Cohort is ${rule.requiredValue}` : `Requires ${rule.requiredValue} cohort`;
+                    }
+                    
+                    if (rule.met) rulesMet++;
+                    
+                    row.innerHTML = `
+                        <span>${ruleNameText}</span>
+                        <span class="${rule.met ? 'met' : 'not-met'}">${detailsText} ${rule.met ? '<i class="fa-solid fa-circle-check"></i>' : ''}</span>
+                    `;
+                    rulesList.appendChild(row);
+                });
+
+                // Calculate progress percent based on whether rules are met
+                // Since it's OR logic (indicated by seeder params), if ANY rule is met, progress is 100%!
+                // Otherwise we show the max ratio
+                let isOr = status.progressToNextTier.rules.length > 0; // Check if there is an OR logic
+                let progressPercent = 0;
+                
+                if (rulesMet > 0) {
+                    progressPercent = 100;
+                } else {
+                    // Show maximum rule progress percentage
+                    status.progressToNextTier.rules.forEach(rule => {
+                        let pct = 0;
+                        if (rule.ruleType === 'ORDER_COUNT_THRESHOLD') {
+                            pct = (parseInt(rule.currentValue) / parseInt(rule.requiredValue)) * 100;
+                        } else if (rule.ruleType === 'MONTHLY_SPEND_THRESHOLD') {
+                            pct = (parseFloat(rule.currentValue) / parseFloat(rule.requiredValue)) * 100;
+                        }
+                        progressPercent = Math.max(progressPercent, Math.min(pct, 99));
+                    });
+                }
+
+                progressPercent = Math.round(progressPercent);
+                document.getElementById('progressPercentText').textContent = `${progressPercent}%`;
+                document.getElementById('progressBar').style.width = `${progressPercent}%`;
+
+            } else {
+                progressWrapper.style.display = 'block';
+                document.getElementById('nextTierProgressLabel').textContent = `Max Tier Unlocked`;
+                document.getElementById('progressPercentText').textContent = `100%`;
+                document.getElementById('progressBar').style.width = `100%`;
+                document.getElementById('ruleProgressList').innerHTML = '<div style="font-size:0.8rem; color:var(--success); font-weight:700;"><i class="fa-solid fa-circle-check"></i> You have achieved the highest Platinum tier!</div>';
+            }
+
+            // Highlights
+            const cards = document.querySelectorAll('.plan-card');
+            cards.forEach(c => c.classList.remove('active-plan'));
+            
+            const activeCard = document.getElementById(`plan-card-${status.subscriptionId}`);
+            // Note: status response has plan name. We'll find by name or match
+            plansGrid.childNodes.forEach(node => {
+                if (node.querySelector && node.querySelector('.plan-name').textContent === status.planName) {
+                    node.classList.add('active-plan');
+                }
+            });
+
+            // History Log Table
+            const historyBody = document.getElementById('historyTableBody');
+            historyBody.innerHTML = '';
+            status.history.forEach(h => {
+                const row = document.createElement('tr');
+                let dateStr = new Date(h.changedAt).toLocaleString();
+                row.innerHTML = `
+                    <td>${h.fromTier ? `<span class="tier-badge tier-${h.fromTier.toLowerCase()}" style="font-size:0.7rem; padding:0.15rem 0.4rem; box-shadow:none;">${h.fromTier}</span>` : '—'}</td>
+                    <td>${h.toTier ? `<span class="tier-badge tier-${h.toTier.toLowerCase()}" style="font-size:0.7rem; padding:0.15rem 0.4rem; box-shadow:none;">${h.toTier}</span>` : '—'}</td>
+                    <td><span class="history-reason">${h.reason}</span></td>
+                    <td style="color:var(--text-secondary); font-size:0.8rem;">${dateStr}</td>
+                `;
+                historyBody.appendChild(row);
+            });
+
+            updateCalculations();
+        }
+
+        // Subscribe to plan
+        async function subscribeToPlan(planId) {
+            if (!activeUserId) return;
+            try {
+                const res = await fetch(`${API_BASE}/memberships/subscribe`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: activeUserId, planId: planId })
+                });
+
+                if (res.status === 409) {
+                    showToast("User already has an active subscription. Cancel it first.", "error");
+                    return;
+                }
+
+                if (res.ok) {
+                    showToast("Successfully subscribed to plan!");
+                    refreshDashboard();
+                } else {
+                    const data = await res.json();
+                    showToast(data.error || "Subscription failed", "error");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Server error during subscription", "error");
+            }
+        }
+
+        // Cancel subscription
+        async function cancelSubscription() {
+            if (!activeUserId) return;
+            if (!confirm("Are you sure you want to cancel your membership? You will lose all active perks.")) return;
+            
+            try {
+                const res = await fetch(`${API_BASE}/memberships/${activeUserId}`, {
+                    method: 'DELETE'
+                });
+
+                if (res.ok) {
+                    showToast("Membership cancelled successfully.", "success");
+                    refreshDashboard();
+                } else {
+                    showToast("Failed to cancel subscription", "error");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Server error", "error");
+            }
+        }
+
+        // Cart Actions
+        function addToCart(name, category, price) {
+            const existing = cart.find(i => i.productName === name);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({
+                    productName: name,
+                    category: category,
+                    unitPrice: price,
+                    quantity: 1
+                });
+            }
+            updateCartUI();
+            debouncedCalculate();
+        }
+
+        function removeFromCart(name) {
+            const existing = cart.find(i => i.productName === name);
+            if (existing) {
+                existing.quantity -= 1;
+                if (existing.quantity <= 0) {
+                    cart = cart.filter(i => i.productName !== name);
+                }
+            }
+            updateCartUI();
+            debouncedCalculate();
+        }
+
+        function updateCartUI() {
+            const list = document.getElementById('cartItemsList');
+            const btn = document.getElementById('btnPlaceOrder');
+            
+            let totalItems = 0;
+            
+            if (cart.length === 0) {
+                list.innerHTML = '<div class="cart-empty">Cart is empty. Click + to add items.</div>';
+                btn.disabled = true;
+                document.getElementById('cartCount').textContent = "(0 items)";
+                return;
+            }
+
+            list.innerHTML = '';
+            cart.forEach(item => {
+                totalItems += item.quantity;
+                const row = document.createElement('div');
+                row.className = 'cart-item-row';
+                row.innerHTML = `
+                    <div>
+                        <span>${item.productName}</span>
+                        <span class="cart-item-qty">x${item.quantity}</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:0.5rem;">
+                        <span style="font-weight:600;">₹${(item.unitPrice * item.quantity).toLocaleString()}</span>
+                        <button class="btn-icon" style="width:20px; height:20px; border-radius:4px; font-size:0.6rem;" onclick="removeFromCart('${item.productName}')"><i class="fa-solid fa-minus"></i></button>
+                    </div>
+                `;
+                list.appendChild(row);
+            });
+
+            document.getElementById('cartCount').textContent = `(${totalItems} item${totalItems > 1 ? 's' : ''})`;
+            btn.disabled = false;
+        }
+
+        // Debounced preview calculations
+        function debouncedCalculate() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(updateCalculations, 300);
+        }
+
+        // Fetch live discount/delivery fee preview
+        async function updateCalculations() {
+            if (cart.length === 0) {
+                document.getElementById('rawTotalText').textContent = "₹0.00";
+                document.getElementById('discountText').textContent = "-₹0.00";
+                document.getElementById('deliveryFeeText').textContent = "₹0.00";
+                document.getElementById('finalBillText').textContent = "₹0.00";
+                document.getElementById('benefitsPreviewBadges').innerHTML = '';
+                return;
+            }
+
+            const requestBody = {
+                userId: activeUserId,
+                items: cart,
+                deliveryFee: 50.00
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/checkout/calculate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    
+                    document.getElementById('rawTotalText').textContent = `₹${parseFloat(data.rawTotal).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+                    document.getElementById('discountText').textContent = `-₹${parseFloat(data.discountApplied).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+                    document.getElementById('deliveryFeeText').textContent = `₹${parseFloat(data.deliveryFee).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+                    document.getElementById('finalBillText').textContent = `₹${parseFloat(data.finalTotal).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+
+                    // Populate badges
+                    const badgesWrapper = document.getElementById('benefitsPreviewBadges');
+                    badgesWrapper.innerHTML = '';
+                    
+                    if (data.benefitsApplied && data.benefitsApplied.length > 0) {
+                        data.benefitsApplied.forEach(b => {
+                            const span = document.createElement('span');
+                            span.className = 'preview-benefit-badge';
+                            span.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${b}`;
+                            badgesWrapper.appendChild(span);
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error("Calculation preview error", err);
+            }
+        }
+
+        // Place Checkout Order
+        async function placeOrder() {
+            if (cart.length === 0 || !activeUserId) return;
+            
+            const requestBody = {
+                userId: activeUserId,
+                items: cart,
+                deliveryFee: 50.00
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/checkout/place-order`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (res.ok) {
+                    const order = await res.json();
+                    showToast(`Checkout complete! Order #${order.orderId} Placed.`, 'success');
+                    
+                    // Clear cart
+                    cart = [];
+                    updateCartUI();
+                    
+                    // Refresh status after order is placed to reflect any auto-upgrades
+                    // Wait a moment for async execution
+                    setTimeout(refreshDashboard, 600);
+                } else {
+                    showToast("Checkout placement failed", 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Server checkout error", 'error');
+            }
+        }
+
+        // Concurrency Simulator Slider
+        function updateSliderVal(val) {
+            document.getElementById('sliderVal').textContent = val;
+        }
+
+        // Trigger Concurrency Stress Test
+        async function runConcurrencyTest() {
+            if (!activeUserId) return;
+            
+            const btn = document.getElementById('btnRunConcurrency');
+            const threadVal = document.getElementById('threadSlider').value;
+            
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner"></span> Executing Simulation...`;
+            document.getElementById('concurrencyResultsWrapper').style.display = 'block';
+            
+            const logBody = document.getElementById('concurrencyLogBody');
+            logBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-secondary);">Spawning virtual threads and performing checkout operations...</td></tr>';
+            
+            try {
+                const res = await fetch(`${API_BASE}/demo/concurrency-test`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: activeUserId, threads: parseInt(threadVal) })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    
+                    // Render concurrency statistics
+                    document.getElementById('concSuccessCount').textContent = data.successCount;
+                    document.getElementById('concFailureCount').textContent = data.failureCount;
+                    document.getElementById('concLockConflicts').textContent = data.optimisticLockRetries;
+                    document.getElementById('concFinalTier').textContent = data.finalTierName;
+                    document.getElementById('concDuration').textContent = data.durationMs;
+
+                    // Highlight lock conflicts card
+                    const lockCard = document.querySelector('.lock-card');
+                    if (data.optimisticLockRetries > 0) {
+                        lockCard.style.background = 'rgba(245, 158, 11, 0.15)';
+                    } else {
+                        lockCard.style.background = 'rgba(15, 23, 42, 0.4)';
+                    }
+
+                    // Render logs
+                    logBody.innerHTML = '';
+                    data.threadResults.forEach(r => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td style="font-family:monospace; font-weight:700;">${r.threadId}</td>
+                            <td>
+                                <span class="tier-badge" style="box-shadow:none; font-size:0.65rem; padding:0.15rem 0.45rem; background:${r.success ? 'var(--success)' : 'var(--danger)'}; color:white;">
+                                    ${r.success ? 'SUCCESS' : 'FAILED'}
+                                </span>
+                            </td>
+                            <td style="color:${r.success ? 'var(--text-secondary)' : '#fca5a5'}; font-size:0.8rem;">
+                                ${r.success ? 'Order completed, triggered upgrade check.' : r.error}
+                            </td>
+                        `;
+                        logBody.appendChild(row);
+                    });
+
+                    showToast("Concurrency sandbox execution complete!", 'success');
+                    
+                    // Refresh subscription metrics
+                    refreshDashboard();
+
+                } else {
+                    showToast("Concurrency stress test failed.", 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Server error during concurrency test", 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-play"></i> Launch Threads`;
+            }
+        }
+    </script>
+</body>
+</html>
